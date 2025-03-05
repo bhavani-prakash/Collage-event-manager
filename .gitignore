@@ -1,0 +1,72 @@
+# Ignore node_modules folder
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore environment variable files
+.env
+
+# Ignore build output directories
+dist/
+build/
+
+# Ignore temporary files
+*.tmp
+*.swp
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.iml
+
+# Ignore coverage reports
+coverage/
+
+# Ignore dependency directories
+bower_components/
+jspm_packages/
+
+# Ignore compiled files
+*.class
+*.o
+*.so
+
+# Ignore Python specific files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Java specific files
+*.jar
+*.war
+*.ear
+
+# Ignore Ruby specific files
+*.gem
+*.rbc
+
+# Ignore Go specific files
+*.exe
+*.dll
+*.dylib
+*.test
+
+# Ignore Rust specific files
+*.rlib
+
+# Ignore Haskell specific files
+*.hi
+*.dyn_hi
+*.dyn_o
+
+# Ignore backup files
+*.bak
+*.old
+*.orig
+*.save
