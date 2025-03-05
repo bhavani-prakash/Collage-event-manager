@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creat Event</title>
+    <link rel="stylesheet" href="creat-event.css">
+</head>
+<body>
+    <div class="creation-container">
+        <div class="form-container">
+            <form>
+                <!-- basic information ( title, poster, discription)-->
+                <div class="form-section">
+                    <h2 class="form-title">Basic Information</h2>
+                    <div class="form-group">
+                        <label>Event Name</label>
+                        <input type="text" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label> poster</label>
+                        <input type="file" accept="image/*">
+
+                    </div>
+
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select>
+                            <option>Academic</option>
+                            <option>department fest</option>
+                            <option>Workshop</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Date & Time -->
+
+                <div class="form-section">
+                    <h2 class="form-title">Date & Time</h2>
+                    <div class="datetime-div">
+                        <div class="form-group">
+                            <label>Start Date/Time</label>
+                            <input type="datetime-local" required>
+                        </div>
+                        <div class="form-group">
+                            <label>End Date/Time</label>
+                            <input type="datetime-local" required>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label>Registration Deadline</label>
+                        <input type="datetime-local">
+                    </div>
+
+                </div>
+                <!-- Location of the event -->
+                <div class="form-section">
+                    <h2 class="form-title">Location</h2>
+                    <div class="form-group">
+                        <label>Event Type</label>
+                        <select>
+                            <option>Physical</option>
+                            <option>Online</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location Details</label>
+                        <input type="text">
+                    </div>
+                </div>
+                
+                <!-- Rigistration Type and the fee -->
+
+                <div class="form-section">
+                    <h2 class="form-title">Ticket Types</h2>
+                    <div class="ticket-type">
+            
+                        <select>
+                            <option>Free</option>
+                            <option>Paid</option>
+                        </select>
+                        <input type="number" placeholder="Price ">
+                    </div>
+                    
+                </div>
+
+               
+            </form>
+            <button type="submit" class="event-submit-but">Create event</button>
+        </div>
+    </div>
+    
+</body>
+</html>
