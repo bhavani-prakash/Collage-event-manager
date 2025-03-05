@@ -1,10 +1,12 @@
 {
   "dependencies": {
     "express": "^4.21.2",
-    "ip": "^2.0.1"
+    "ip": "^2.0.1",
+    "nodemon": "^3.1.9"
   },
   "scripts": {
-    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "start": "nodemon server.js",
     "network-url": "node -e \"const ip = require('ip'); console.log('Network URL: http://' + ip.address() + ':3000');\""
   }
 }
