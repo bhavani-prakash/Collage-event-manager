@@ -8,19 +8,57 @@ body{
      background: linear-gradient(122deg, rgba(24,24,130,1) 0%, rgba(86,38,142,1) 100%);
      font-family: 'Inter', sans-serif;
      background-repeat: no-repeat;
-     background-size: cover;
+     background-size: cover;  
+}
+nav{
+    background-color: rgba(159, 180, 219, 0.808);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0px 0px 10px 0px rgb(143, 184, 211);
     
+}
+.logo{
+    display: flex;
+    align-items: center;
+    margin-left: 50px;   
+}
+.logo-image{
+    height: 80%;
+    width: 10rem;
+}
+nav .nav-items{
+    display: flex;
+    gap: 4rem;
+    align-items: center;
+    justify-content: center;
+    margin-right: 50px;  
    
 }
-.mits-logo{
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
+nav .nav-items a{
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    font-size: 1.2rem;
 }
+nav .nav-items a:hover{
+    text-decoration: underline;
+}
+#department-filter{
+    padding: 10px;
+    color: black;
+    font-weight: 500;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    background-color: rgb(196, 203, 228);
+}
+
+
 .hero {
     color: white;
-    padding: 80px 20px;
+    padding: 50px 20px;
     text-align: center;
 }
 .hero-container {
@@ -42,35 +80,7 @@ body{
     margin-left: auto;
     margin-right: auto;
 }
-.buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-.btn {
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: inline-block;
-}
-.button-Browse{
-    background: #db704c;
-    color: white;
-}
 
-.button-Creat {
-    background: transparent;
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
 .event-card {
     background: #F8F9FA;
     border-radius: 8px;
