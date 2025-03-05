@@ -1,0 +1,48 @@
+[
+    {
+        "image": "assets/images/gmocs.jpg",
+        "alt": "Event 1",
+        "status": "Upcoming !",
+        "date": "March 25, 2024",
+        "title": "GMOCS 2025",
+        "description": "A day national level technical symposium...",
+        "detailsLink": "#"
+    },
+    {
+        "image": "assets/images/gmocs.jpg",
+        "alt": "Event 1",
+        "status": "Upcoming !",
+        "date": "March 25, 2024",
+        "title": "GMOCS 2025",
+        "description": "A day national level technical symposium...",
+        "detailsLink": "#"
+    },
+    {
+        "image": "assets/images/gmocs.jpg",
+        "alt": "Event 1",
+        "status": "Upcoming !",
+        "date": "March 25, 2024",
+        "title": "GMOCS 2025",
+        "description": "A day national level technical symposium...",
+        "detailsLink": "#",
+        "target": "_blank"
+    },
+    {
+        "image": "assets/images/gmocs.jpg",
+        "alt": "Event 1",
+        "status": "Upcoming !",
+        "date": "March 25, 2024",
+        "title": "GMOCS 2025",
+        "description": "A day national level technical symposium...",
+        "detailsLink": "#"
+    },
+    {
+        "image": "assets/images/gmocs.jpg",
+        "alt": "Event 1",
+        "status": "Upcoming !",
+        "date": "March 25, 2024",
+        "title": "GMOCS 2025",
+        "description": "A day national level technical symposium...",
+        "detailsLink": "#"
+    }
+]
