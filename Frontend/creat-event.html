@@ -1,36 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creat Event</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="assets/CSS/creat-event.css">
 </head>
+
 <body>
-    <div class="creation-container">
-        <div class="form-container">
-            <form>
+    <div class="form-container">
+        <form class="creat-event-form">
+            <div class="input-form">
                 <!-- basic information ( title, poster, discription)-->
                 <div class="form-section">
                     <h2 class="form-title">Basic Information</h2>
                     <div class="form-group">
-                        <label>Event Name</label>
+                        <label>Event Name:</label>
                         <input type="text" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Description</label>
+                        <label>Description :</label>
                         <textarea rows="4"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label> poster</label>
+                        <label> poster :</label>
                         <input type="file" accept="image/*">
-
                     </div>
 
                     <div class="form-group">
-                        <label>Category</label>
+                        <label>Rigistration link <i class="fa fa-link" aria-hidden="true"></i> :</label>
+                        <input type="url" required>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Category :</label>
                         <select>
                             <option>Academic</option>
                             <option>Department fest</option>
@@ -43,26 +51,26 @@
 
                 <div class="form-section">
                     <h2 class="form-title">Date & Time</h2>
-                    <div class="datetime-div">
-                        <div class="form-group">
-                            <label>Start Date/Time</label>
-                            <input type="datetime-local" required>
-                        </div>
-                        <div class="form-group">
-                            <label>End Date/Time</label>
-                            <input type="datetime-local" required>
-                        </div>
 
+                    <div class="form-group">
+                        <label>Start Date/Time :</label>
+                        <input type="datetime-local" required>
                     </div>
                     <div class="form-group">
-                        <label>Registration Deadline</label>
+                        <label>End Date/Time :</label>
+                        <input type="datetime-local" required>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Registration Deadline :</label>
                         <input type="datetime-local">
                     </div>
 
                 </div>
                 <!-- Location of the event -->
                 <div class="form-section">
-                    <h2 class="form-title">Venue</h2>
+                    <h2 class="form-title">Venue <i class="fa fa-map-marker" aria-hidden="true"></i> :</h2>
                     <div class="form-group">
                         <label>Event Type</label>
                         <select>
@@ -71,32 +79,35 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Venue</label>
+                        <label>Venue :</label>
                         <input type="text">
                     </div>
                 </div>
-                
+
                 <!-- Rigistration Type and the fee -->
 
                 <div class="form-section">
                     <h2 class="form-title">Ticket Type</h2>
                     <div class="ticket-type">
-            
+
                         <select>
                             <option>Free</option>
                             <option>Paid</option>
                         </select>
                         <input type="number" placeholder="Price ">
                     </div>
-                    
-                </div>
 
-               <div class="submit-button">
+                </div>
+            </div>
+
+
+            <div class="submit-button">
                 <button type="submit" class="event-submit-but">Create event</button>
-               </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
-    
+
+
 </body>
+
 </html>
