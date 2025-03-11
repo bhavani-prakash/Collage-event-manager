@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        await mongoose.connect('your_mongodb_connection_string_here', {
+        await mongoose.connect('mongodb+srv://Rohith_E:jcu-L:v4Bc8GWy!@Event_Manager.ekv0vib.mongodb.net/?retryWrites=true&w=majority&appName=Event_Manager', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false,

@@ -1,6 +1,6 @@
 [
     {
-        "image": "assets/images/gmocs.jpg",
+        "image": "static/images/gmocs.jpg",
         "alt": "Event 1",
         "status": "Upcoming !",
         "date": "March 25, 2024",
@@ -9,7 +9,7 @@
         "detailsLink": "#"
     },
     {
-        "image": "assets/images/gmocs.jpg",
+        "image": "static/images/gmocs.jpg",
         "alt": "Event 1",
         "status": "Upcoming !",
         "date": "March 25, 2024",
@@ -18,7 +18,7 @@
         "detailsLink": "#"
     },
     {
-        "image": "assets/images/gmocs.jpg",
+        "image": "static/images/gmocs.jpg",
         "alt": "Event 1",
         "status": "Upcoming !",
         "date": "March 25, 2024",
@@ -28,7 +28,7 @@
         "target": "_blank"
     },
     {
-        "image": "assets/images/gmocs.jpg",
+        "image": "static/images/gmocs.jpg",
         "alt": "Event 1",
         "status": "Upcoming !",
         "date": "March 25, 2024",
@@ -37,7 +37,7 @@
         "detailsLink": "#"
     },
     {
-        "image": "assets/images/gmocs.jpg",
+        "image": "static/images/gmocs.jpg",
         "alt": "Event 1",
         "status": "Upcoming !",
         "date": "March 25, 2024",
