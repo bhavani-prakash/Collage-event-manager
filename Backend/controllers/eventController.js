@@ -1,64 +1,63 @@
 const Event = require('../models/event');
 
-class EventController {
-    async createEvent(req, res) {
-        try {
-            const eventData = req.body;
-            const newEvent = new Event(eventData);
-            await newEvent.save();
-            res.status(201).json(newEvent);
-        } catch (error) {
-            res.status(500).json({ message: 'Error creating event', error: error.message });
-        }
+// Get all events
+const getAllEvents = async (req, res) => {
+    try {
+        const events = await Event.find();
+        res.json(events);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
+};
 
-    async getAllEvents(req, res) {
-        try {
-            const events = await Event.find();
-            res.status(200).json(events);
-        } catch (error) {
-            res.status(500).json({ message: 'Error fetching events', error: error.message });
-        }
+// Get event by ID
+const getEventById = async (req, res) => {
+    try {
+        const event = await Event.findById(req.params.id);
+        if (!event) return res.status(404).json({ message: 'Event not found' });
+        res.json(event);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
+};
 
-    async getEventById(req, res) {
-        try {
-            const { id } = req.params;
-            const event = await Event.findById(id);
-            if (!event) {
-                return res.status(404).json({ message: 'Event not found' });
-            }
-            res.status(200).json(event);
-        } catch (error) {
-            res.status(500).json({ message: 'Error fetching event', error: error.message });
-        }
+// Create a new event
+const createEvent = async (req, res) => {
+    const event = new Event(req.body);
+    try {
+        const newEvent = await event.save();
+        res.status(201).json(newEvent);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
+};
 
-    async updateEvent(req, res) {
-        try {
-            const { id } = req.params;
-            const updatedEvent = await Event.findByIdAndUpdate(id, req.body, { new: true });
-            if (!updatedEvent) {
-                return res.status(404).json({ message: 'Event not found' });
-            }
-            res.status(200).json(updatedEvent);
-        } catch (error) {
-            res.status(500).json({ message: 'Error updating event', error: error.message });
-        }
+// Update an event
+const updateEvent = async (req, res) => {
+    try {
+        const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!event) return res.status(404).json({ message: 'Event not found' });
+        res.json(event);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
+};
 
-    async deleteEvent(req, res) {
-        try {
-            const { id } = req.params;
-            const deletedEvent = await Event.findByIdAndDelete(id);
-            if (!deletedEvent) {
-                return res.status(404).json({ message: 'Event not found' });
-            }
-            res.status(200).json({ message: 'Event deleted successfully' });
-        } catch (error) {
-            res.status(500).json({ message: 'Error deleting event', error: error.message });
-        }
+// Delete an event
+const deleteEvent = async (req, res) => {
+    try {
+        const event = await Event.findByIdAndDelete(req.params.id);
+        if (!event) return res.status(404).json({ message: 'Event not found' });
+        res.json({ message: 'Event deleted' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-}
+};
 
-module.exports = new EventController();
+module.exports = {
+    getAllEvents,
+    getEventById,
+    createEvent,
+    updateEvent,
+    deleteEvent
+};
