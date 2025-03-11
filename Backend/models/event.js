@@ -17,14 +17,14 @@ const eventSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    registrationurl: {
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         enum: ['Upcoming', 'Ongoing', 'Completed'],
         default: 'Upcoming'
-    },
-    category: {
-        type: String,
-        required: true
     },
     branch: {
         type: String,
