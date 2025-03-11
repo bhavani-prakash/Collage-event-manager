@@ -115,7 +115,7 @@
             formData.append('type', document.getElementById('event-type').value);
 
             try {
-                const response = await fetch('http://localhost:3000/events', {
+                const response = await fetch('http://localhost:3000/api/events', {
                     method: 'POST',
                     body: formData
                 });
