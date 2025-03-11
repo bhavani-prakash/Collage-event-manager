@@ -5,7 +5,7 @@ const path = require('path');
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'Frontend/static/images');
+        cb(null, 'Frontend/static/uploads');
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
@@ -39,14 +39,18 @@ const getEventById = async (req, res) => {
 const createEvent = async (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
+            console.error('Multer error:', err);
             return res.status(400).json({ message: err.message });
         }
+
+        console.log('Request body:', req.body);
+        console.log('Uploaded file:', req.file);
 
         const event = new Event({
             title: req.body.title,
             description: req.body.description,
             date: req.body.date,
-            image: `/static/images/${req.file.filename}`,
+            image: req.file ? `/static/uploads/${req.file.filename}` : '',
             registrationurl: req.body.registrationurl,
             status: req.body.status,
             branch: req.body.branch,
@@ -57,6 +61,7 @@ const createEvent = async (req, res) => {
             const newEvent = await event.save();
             res.status(201).json(newEvent);
         } catch (err) {
+            console.error('Error saving event:', err);
             res.status(400).json({ message: err.message });
         }
     });
