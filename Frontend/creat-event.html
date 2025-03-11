@@ -4,42 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creat Event</title>
+    <title>Create Event</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="static/CSS/creat-event.css">
+    <link rel="stylesheet" href="static/CSS/create-event.css">
 </head>
 
 <body>
     <div class="form-container">
-        <form class="creat-event-form">
+        <form class="create-event-form" id="create-event-form">
             <div class="input-form">
-                <!-- basic information ( title, poster, discription)-->
+                <!-- basic information ( title, poster, description)-->
                 <div class="form-section">
                     <h2 class="form-title">Basic Information</h2>
                     <div class="form-group">
                         <label>Event Name:</label>
-                        <input type="text" required>
+                        <input type="text" id="event-name" required>
                     </div>
 
                     <div class="form-group">
                         <label>Description :</label>
-                        <textarea rows="4"></textarea>
+                        <textarea id="event-description" rows="4" required></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label> poster :</label>
-                        <input type="file" accept="image/*">
+                        <label>Poster :</label>
+                        <input type="file" id="event-poster" accept="image/*" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Rigistration link <i class="fa fa-link" aria-hidden="true"></i> :</label>
-                        <input type="url" required>
+                        <label>Registration link <i class="fa fa-link" aria-hidden="true"></i> :</label>
+                        <input type="url" id="event-registration-url" required>
                     </div>
-
 
                     <div class="form-group">
                         <label>Category :</label>
-                        <select>
+                        <select id="event-category">
                             <option>Academic</option>
                             <option>Department fest</option>
                             <option>Workshop</option>
@@ -48,58 +47,52 @@
                 </div>
 
                 <!-- Date & Time -->
-
                 <div class="form-section">
                     <h2 class="form-title">Date & Time</h2>
 
                     <div class="form-group">
                         <label>Start Date/Time :</label>
-                        <input type="datetime-local" required>
+                        <input type="datetime-local" id="event-start-datetime" required>
                     </div>
                     <div class="form-group">
                         <label>End Date/Time :</label>
-                        <input type="datetime-local" required>
+                        <input type="datetime-local" id="event-end-datetime" required>
                     </div>
-
 
                     <div class="form-group">
                         <label>Registration Deadline :</label>
-                        <input type="datetime-local">
+                        <input type="datetime-local" id="event-registration-deadline">
                     </div>
-
                 </div>
+
                 <!-- Location of the event -->
                 <div class="form-section">
                     <h2 class="form-title">Venue <i class="fa fa-map-marker" aria-hidden="true"></i> :</h2>
                     <div class="form-group">
                         <label>Event Type</label>
-                        <select>
+                        <select id="event-type">
                             <option>Physical</option>
                             <option>Online</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Venue :</label>
-                        <input type="text">
+                        <input type="text" id="event-venue">
                     </div>
                 </div>
 
-                <!-- Rigistration Type and the fee -->
-
+                <!-- Registration Type and the fee -->
                 <div class="form-section">
                     <h2 class="form-title">Ticket Type</h2>
                     <div class="ticket-type">
-
-                        <select>
+                        <select id="event-ticket-type">
                             <option>Free</option>
                             <option>Paid</option>
                         </select>
-                        <input type="number" placeholder="Price ">
+                        <input type="number" id="event-ticket-price" placeholder="Price">
                     </div>
-
                 </div>
             </div>
-
 
             <div class="submit-button">
                 <button type="submit" class="event-submit-but">Create event</button>
@@ -107,7 +100,38 @@
         </form>
     </div>
 
+    <script>
+        document.getElementById('create-event-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
+            const formData = new FormData();
+            formData.append('title', document.getElementById('event-name').value);
+            formData.append('description', document.getElementById('event-description').value);
+            formData.append('date', document.getElementById('event-start-datetime').value);
+            formData.append('image', document.getElementById('event-poster').files[0]);
+            formData.append('registrationurl', document.getElementById('event-registration-url').value);
+            formData.append('status', 'Upcoming !');
+            formData.append('branch', document.getElementById('event-category').value);
+            formData.append('type', document.getElementById('event-type').value);
+
+            try {
+                const response = await fetch('http://localhost:3000/events', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Event created successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Failed to create event.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to create event.');
+            }
+        });
+    </script>
 </body>
 
 </html>

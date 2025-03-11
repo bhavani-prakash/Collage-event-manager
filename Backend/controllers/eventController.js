@@ -1,4 +1,18 @@
 const Event = require('../models/event');
+const multer = require('multer');
+const path = require('path');
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'Frontend/static/images');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage: storage }).single('image');
 
 // Get all events
 const getAllEvents = async (req, res) => {
@@ -23,13 +37,29 @@ const getEventById = async (req, res) => {
 
 // Create a new event
 const createEvent = async (req, res) => {
-    const event = new Event(req.body);
-    try {
-        const newEvent = await event.save();
-        res.status(201).json(newEvent);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
+    upload(req, res, async (err) => {
+        if (err) {
+            return res.status(400).json({ message: err.message });
+        }
+
+        const event = new Event({
+            title: req.body.title,
+            description: req.body.description,
+            date: req.body.date,
+            image: `/static/images/${req.file.filename}`,
+            registrationurl: req.body.registrationurl,
+            status: req.body.status,
+            branch: req.body.branch,
+            type: req.body.type
+        });
+
+        try {
+            const newEvent = await event.save();
+            res.status(201).json(newEvent);
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
+    });
 };
 
 // Update an event
