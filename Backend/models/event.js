@@ -25,6 +25,16 @@ const eventSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true
+    },
+    branch: {
+        type: String,
+        enum: ['CSE', 'ECE', 'EEE', 'MECH', 'CIVIL', 'Others'],
+        required: true
+    },
+    type: {
+        type: String,
+        enum: ['Technical', 'Non-Technical'],
+        required: true
     }
 });
 

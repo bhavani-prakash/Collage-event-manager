@@ -1,3 +1,5 @@
+const Event = require('../models/event');
+
 class EventController {
     async createEvent(req, res) {
         try {
@@ -10,7 +12,7 @@ class EventController {
         }
     }
 
-    async getAllEvents(req, res) { // Renamed from getEvents to getAllEvents
+    async getAllEvents(req, res) {
         try {
             const events = await Event.find();
             res.status(200).json(events);
