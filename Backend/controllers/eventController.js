@@ -5,7 +5,7 @@ const path = require('path');
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'Frontend/static/uploads');
+        cb(null, 'Backend/uploads/');
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
@@ -14,10 +14,27 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }).single('image');
 
-// Get all events
+// Get all events (with optional department filter)
 const getAllEvents = async (req, res) => {
     try {
-        const events = await Event.find();
+        const filter = {};
+        if (req.query.department && req.query.department !== 'all') {
+            // Map filter value to branch field in DB
+            const departmentMap = {
+                cse: 'CSE',
+                ece: 'ECE',
+                eee: 'EEE',
+                mech: 'MECH',
+                civil: 'CIVIL',
+                ai: 'AI',
+                ml: 'ML',
+                cyber: 'CYBER',
+                others: 'Others'
+            };
+            const branch = departmentMap[req.query.department.toLowerCase()];
+            if (branch) filter.branch = branch;
+        }
+        const events = await Event.find(filter);
         res.json(events);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -43,18 +60,25 @@ const createEvent = async (req, res) => {
             return res.status(400).json({ message: err.message });
         }
 
-        console.log('Request body:', req.body);
-        console.log('Uploaded file:', req.file);
+        // Parse ticketprice as number
+        let ticketprice = req.body.ticketprice;
+        if (ticketprice) ticketprice = Number(ticketprice);
 
         const event = new Event({
             title: req.body.title,
             description: req.body.description,
             date: req.body.date,
-            image: req.file ? `/static/uploads/${req.file.filename}` : '',
+            enddate: req.body.enddate,
+            registrationdeadline: req.body.registrationdeadline,
+            image: req.file ? `/uploads/${req.file.filename}` : '',
             registrationurl: req.body.registrationurl,
             status: req.body.status,
             branch: req.body.branch,
-            type: req.body.type
+            category: req.body.category,
+            type: req.body.type,
+            venue: req.body.venue,
+            tickettype: req.body.tickettype,
+            ticketprice: ticketprice
         });
 
         try {

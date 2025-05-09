@@ -6,16 +6,8 @@
         "date": "March 25, 2024",
         "title": "GMOCS 2025",
         "description": "A day national level technical symposium...",
-        "detailsLink": "#"
-    },
-    {
-        "image": "static/images/gmocs.jpg",
-        "alt": "Event 1",
-        "status": "Upcoming !",
-        "date": "March 25, 2024",
-        "title": "GMOCS 2025",
-        "description": "A day national level technical symposium...",
-        "detailsLink": "#"
+        "detailsLink": "#",
+        "branch": "CSE"
     },
     {
         "image": "static/images/gmocs.jpg",
@@ -25,7 +17,7 @@
         "title": "GMOCS 2025",
         "description": "A day national level technical symposium...",
         "detailsLink": "#",
-        "target": "_blank"
+        "branch": "ECE"
     },
     {
         "image": "static/images/gmocs.jpg",
@@ -34,7 +26,9 @@
         "date": "March 25, 2024",
         "title": "GMOCS 2025",
         "description": "A day national level technical symposium...",
-        "detailsLink": "#"
+        "detailsLink": "#",
+        "target": "_blank",
+        "branch": "AI"
     },
     {
         "image": "static/images/gmocs.jpg",
@@ -43,6 +37,17 @@
         "date": "March 25, 2024",
         "title": "GMOCS 2025",
         "description": "A day national level technical symposium...",
-        "detailsLink": "#"
+        "detailsLink": "#",
+        "branch": "MECH"
+    },
+    {
+        "image": "static/images/gmocs.jpg",
+        "alt": "Event 1",
+        "status": "Upcoming !",
+        "date": "March 25, 2024",
+        "title": "GMOCS 2025",
+        "description": "A day national level technical symposium...",
+        "detailsLink": "#",
+        "branch": "CIVIL"
     }
 ]

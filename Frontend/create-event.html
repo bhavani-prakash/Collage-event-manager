@@ -42,9 +42,9 @@
                     <div class="form-group">
                         <label>Category :</label>
                         <select id="event-category">
-                            <option>Academic</option>
-                            <option>Department fest</option>
-                            <option>Workshop</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Department fest">Department fest</option>
+                            <option value="Workshop">Workshop</option>
                         </select>
                     </div>
                 </div>
@@ -74,16 +74,30 @@
                     <div class="form-group">
                         <label>Event Type</label>
                         <select id="event-type">
-                            <option>Physical</option>
-                            <option>Online</option>
+                            <option value="technical">Technical</option>
+                            <option value="non-technical">Non-Technical</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Department :</label>
+                        <select id="event-branch" required>
+                            <option value="CSE">CSE</option>
+                            <option value="ECE">ECE</option>
+                            <option value="AI">AI</option>
+                            <option value="ML">ML</option>
+                            <option value="CYBER">CYBER</option>
+                            <option value="MECH">MECH</option>
+                            <option value="CIVIL">CIVIL</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label>Venue :</label>
                         <input type="text" id="event-venue">
                     </div>
 
-                     <!-- Registration Type and the fee -->
+                    <!-- Registration Type and the fee -->
                     <h2 class="form-title">Ticket Type :</h2>
                     <div class="ticket-type">
                         <select id="event-ticket-type">
@@ -93,88 +107,94 @@
                         <input type="number" id="event-ticket-price" placeholder="Price">
                     </div>
                 </div>
-                
+
             </div>
 
             <div class="submit-button">
                 <button type="submit" class="event-submit-but">Create event</button>
             </div>
         </form>
+        <script>
+            document.getElementById('create-event-form').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const formData = new FormData();
+                formData.append('title', document.getElementById('event-name').value);
+                formData.append('description', document.getElementById('event-description').value);
+                formData.append('date', document.getElementById('event-start-datetime').value);
+                formData.append('enddate', document.getElementById('event-end-datetime').value);
+                formData.append('registrationdeadline', document.getElementById('event-registration-deadline').value);
+                formData.append('image', document.getElementById('event-poster').files[0]);
+                formData.append('registrationurl', document.getElementById('event-registration-url').value);
+                formData.append('status', 'Upcoming !');
+                formData.append('branch', document.getElementById('event-branch').value);
+                formData.append('category', document.getElementById('event-category').value);
+                formData.append('type', document.getElementById('event-type').value);
+                formData.append('venue', document.getElementById('event-venue').value);
+                formData.append('tickettype', document.getElementById('event-ticket-type').value);
+                formData.append('ticketprice', document.getElementById('event-ticket-price').value);
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/events', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        alert('Event created successfully!');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to create event.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    console.log(formData);
+                    alert('Failed to create event.');
+                }
+            });
+        </script>
     </div>
 
-      <!-- Footer -->
-      <footer>
+    <!-- Footer -->
+    <footer>
         <div class="footer-container">
-        <!-- About US-->
-        <div class="footer-info">
-            <h2>About Us</h2>
-            <p>"Our college event management system helps students and faculty organize, manage, and participate in
-                events seamlessly." </p>
-        </div>
-        <!-- Contact Us-->
-        <div class="footer-info" id="contact-us">
-            <h2>Contact Us</h2>
-            <p>madanapalle institute of technology and science</p>
-            <p>Kadiri Road Angallu, Village, Madanapalle, Andhra Pradesh 517325</p>
-            <p>Email: <a href="mailto:bhavaniprakash960@gmail.com"> eventmanager@gmail.com</a></p>
-        </div>
-        <!-- Social Media-->
-        <div class="footer-info">
-            <h2>Follow Us</h2>
-            <div class="media-icons">
-            <a href="https://www.facebook.com/" target="_blank" class="social-link">
-                <i class="fab fa-facebook"></i>
-            </a>
-            <a href="https://www.instagram.com/" target="_blank" class="social-link">
-                <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://www.twitter.com/" target="_blank" class="social-link">
-                <i class="fab fa-twitter"></i>
-            </a>
+            <!-- About US-->
+            <div class="footer-info">
+                <h2>About Us</h2>
+                <p>"Our college event management system helps students and faculty organize, manage, and participate in
+                    events seamlessly." </p>
+            </div>
+            <!-- Contact Us-->
+            <div class="footer-info" id="contact-us">
+                <h2>Contact Us</h2>
+                <p>madanapalle institute of technology and science</p>
+                <p>Kadiri Road Angallu, Village, Madanapalle, Andhra Pradesh 517325</p>
+                <p>Email: <a href="mailto:bhavaniprakash960@gmail.com"> eventmanager@gmail.com</a></p>
+            </div>
+            <!-- Social Media-->
+            <div class="footer-info">
+                <h2>Follow Us</h2>
+                <div class="media-icons">
+                    <a href="https://www.facebook.com/" target="_blank" class="social-link">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="https://www.instagram.com/" target="_blank" class="social-link">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.twitter.com/" target="_blank" class="social-link">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+
+            </div>
         </div>
 
+        <div class="copyright">
+            <p> &copy; 2021 MITS Event Manager. All Rights Reserved.</p>
         </div>
-    </div>
-
-    <div class="copyright">
-       <p> &copy; 2021 MITS Event Manager. All Rights Reserved.</p>
-    </div>
 
 
     </footer>
-
-    <script>
-        document.getElementById('create-event-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const formData = new FormData();
-            formData.append('title', document.getElementById('event-name').value);
-            formData.append('description', document.getElementById('event-description').value);
-            formData.append('date', document.getElementById('event-start-datetime').value);
-            formData.append('image', document.getElementById('event-poster').files[0]);
-            formData.append('registrationurl', document.getElementById('event-registration-url').value);
-            formData.append('status', 'Upcoming !');
-            formData.append('branch', document.getElementById('event-category').value);
-            formData.append('type', document.getElementById('event-type').value);
-
-            try {
-                const response = await fetch('http://localhost:3000/api/events', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    alert('Event created successfully!');
-                    window.location.reload();
-                } else {
-                    alert('Failed to create event.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to create event.');
-            }
-        });
-    </script>
 </body>
 
 </html>
