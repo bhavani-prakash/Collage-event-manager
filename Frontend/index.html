@@ -29,12 +29,12 @@
                 <option value="civil">Civil</option>
                 <option value="others">Others</option>
             </select>
-            
+
             <script>
                 async function fetchAndRenderEvents(department = 'all') {
                     const eventsContainer = document.getElementById('events-section');
                     eventsContainer.innerHTML = '';
-            
+
                     // Helper to map filter value to branch
                     function getBranchFromFilter(value) {
                         switch (value) {
@@ -49,7 +49,7 @@
                             default: return null;
                         }
                     }
-            
+
                     // Fetch and filter JSON events
                     try {
                         const jsonResponse = await fetch('static/JSON/events.json');
@@ -60,11 +60,23 @@
                             filteredJsonEvents = jsonEvents.filter(event => (event.branch || '').toUpperCase() === branch);
                         }
                         filteredJsonEvents.forEach(event => {
+                            const now = new Date();
+                            const start = new Date(event.date);
+                            const end = new Date(event.enddate);
+
+                            let status = '';
+                            if (now < start) {
+                                status = 'Upcoming';
+                            } else if (now >= start && now <= end) {
+                                status = 'Ongoing';
+                            } else {
+                                status = 'Completed';
+                            }
                             const eventCard = document.createElement('div');
                             eventCard.classList.add('event-card');
                             eventCard.innerHTML = `
                                 <img src="${event.image}" alt="${event.alt}" class="event-image">
-                                <div class="event-status">${event.status}</div>
+                                <div class="event-status">${status}</div>
                                 <div class="event-date">${event.date}</div>
                                 <h3 class="event-title">${event.title}</h3>
                                 <p class="event-description">${event.description}</p>
@@ -75,7 +87,7 @@
                     } catch (error) {
                         console.error('Error fetching events from JSON:', error);
                     }
-            
+
                     // Fetch and filter DB events
                     try {
                         let url = 'http://localhost:3000/api/events';
@@ -84,29 +96,69 @@
                         }
                         const dbResponse = await fetch(url);
                         const dbEvents = await dbResponse.json();
-            
+
                         dbEvents.forEach(event => {
+                            let regUrl = event.registrationurl;
+                            if (regUrl && !regUrl.startsWith('http://') && !regUrl.startsWith('https://')) {
+                                regUrl = 'https://' + regUrl;
+                            }
+                            const eventDate = new Date(event.date).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+
+                            // Dynamic status calculation
+                            const now = new Date();
+                            const start = new Date(event.date);
+                            const end = new Date(event.enddate);
+
+                            let status = '';
+                            if (now < start) {
+                                status = 'Upcoming';
+                            } else if (now >= start && now <= end) {
+                                status = 'Ongoing';
+                            } else {
+                                status = 'Completed';
+                            }
+                            // Check registration deadline
+                            let isRegistrationClosed = false;
+                            if (event.registrationdeadline) {
+                                const deadline = new Date(event.registrationdeadline);
+                                const now = new Date();
+                                isRegistrationClosed = now > deadline;
+                            }
+
                             const eventCard = document.createElement('div');
                             eventCard.classList.add('event-card');
                             eventCard.innerHTML = `
                                 <img src="${event.image}" alt="${event.title}" class="event-image">
-                                <div class="event-status">${event.status}</div>
-                                <div class="event-date">${new Date(event.date).toLocaleDateString()}</div>
+                                <div class="event-status">${status}</div>
+                                <div class="event-date">${eventDate}</div>
                                 <h3 class="event-title">${event.title}</h3>
                                 <p class="event-description">${event.description}</p>
-                                <a href="${event.registrationurl}" target="_blank" class="view-details">View Details</a>
+                                ${isRegistrationClosed
+                                    ? `<span class="view-details registrations-closed">Registrations Closed</span>`
+                                    : `<a href="${regUrl}" target="_blank" class="view-details">View Details</a>`
+                                }
                             `;
                             eventsContainer.appendChild(eventCard);
+                            if (isRegistrationClosed) {
+                                const closedBtn = eventCard.querySelector('.registrations-closed');
+                                closedBtn.addEventListener('click', () => {
+                                    alert('Registrations are closed for this event.');
+                                });
+                            }
                         });
                     } catch (err) {
                         console.error('Failed to fetch events from Database:', err);
                     }
                 }
-            
+
                 document.addEventListener('DOMContentLoaded', () => {
                     const departmentFilter = document.getElementById('department-filter');
                     fetchAndRenderEvents(departmentFilter.value);
-            
+
                     departmentFilter.addEventListener('change', function () {
                         fetchAndRenderEvents(this.value);
                     });
