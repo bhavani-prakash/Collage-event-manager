@@ -35,8 +35,7 @@ nav .nav-items{
     gap: 4rem;
     align-items: center;
     justify-content: center;
-    margin-right: 50px;  
-   
+    margin-right: 50px;     
 }
 nav .nav-items a{
     text-decoration: none;
@@ -88,6 +87,7 @@ nav .nav-items a:hover{
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     overflow: hidden;
     margin: 1rem;
+    width: 300px;
     max-width: 300px;
     display: flex;
     flex-direction: column;
