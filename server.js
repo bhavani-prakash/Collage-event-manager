@@ -2,7 +2,9 @@ const express = require('express');
 const path = require('path');
 const connectDB = require('./Backend/config/database');
 const eventRoutes = require('./Backend/routes/events');
+const authRoutes = require('./Backend/routes/auth');
 const isAdmin = require('./Backend/middleware/authMiddleware');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const port = 3000;
@@ -13,6 +15,7 @@ connectDB();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'Frontend')));
@@ -20,16 +23,21 @@ app.use('/uploads', express.static(path.join(__dirname, 'Backend/uploads')));
 
 // Routes
 app.use('/api/events', eventRoutes);
+app.use('/api/auth', authRoutes);
 
 // Home
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Frontend', 'index.html'));
 });
 
-// Serve create-event.html
-app.get('/admin', isAdmin, (req, res) => {
+// Serve /admin login/register page (use only /admin for admin-login.html)
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Frontend', 'admin-login.html'));
+});
+
+// Serve create-event.html only for admins (protected)
+app.get('/admin/create', isAdmin, (req, res) => {
     const filePath = path.join(__dirname, 'Frontend', 'create-event.html');
-    // console.log(`Serving file from: ${filePath}`);
     res.sendFile(filePath, (err) => {
         if (err) {
             console.error('Error serving file:', err);
@@ -38,21 +46,14 @@ app.get('/admin', isAdmin, (req, res) => {
     });
 });
 
-// Handle form submission
-app.post('/api/events', async (req, res) => {
-    try {
-        const { title, description, date, image, registrationurl, status, branch, type } = req.body;
-        // Save the event data to the database
-        // Replace with actual database save logic
-        const newEvent = { title, description, date, image, registrationurl, status, branch, type };
-        console.log('Event data:', newEvent);
-        // Assuming you have a model named Event
-        // await Event.create(newEvent);
-        res.status(201).send('Event created successfully');
-    } catch (error) {
-        console.error('Error creating event:', error);
-        res.status(500).send('Failed to create event');
-    }
+// Serve user login page
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Frontend', 'login.html'));
+});
+
+// Serve user registration page
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Frontend', 'register.html'));
 });
 
 app.listen(port, () => {

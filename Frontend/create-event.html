@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Event</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="static/CSS/create-event.css">
+    <link rel="stylesheet" href="/static/CSS/create-event.css">
 </head>
 
 <body>
@@ -15,6 +15,7 @@
             <h2> ADD EVENT </h2>
         </div>
         <form class="create-event-form" id="create-event-form">
+            <div id="form-error" style="color: red; display: none; margin-bottom: 10px;"></div>
             <div class="input-form">
                 <!-- basic information ( title, poster, description)-->
                 <div class="form-section">
@@ -118,41 +119,83 @@
             document.getElementById('create-event-form').addEventListener('submit', async function (e) {
                 e.preventDefault();
 
+                // Client-side validation
+                const name = document.getElementById('event-name').value.trim();
+                const desc = document.getElementById('event-description').value.trim();
+                const poster = document.getElementById('event-poster').files[0];
+                const regUrl = document.getElementById('event-registration-url').value.trim();
+                const start = document.getElementById('event-start-datetime').value;
+                const end = document.getElementById('event-end-datetime').value;
+                const branch = document.getElementById('event-branch').value;
+                const category = document.getElementById('event-category').value;
+                const type = document.getElementById('event-type').value;
+                const ticketType = document.getElementById('event-ticket-type').value;
+                const ticketPrice = document.getElementById('event-ticket-price').value;
+
+                let errorMsg = '';
+                if (!name || !desc || !poster || !regUrl || !start || !end || !branch || !category || !type || !ticketType) {
+                    errorMsg = 'Please fill in all required fields.';
+                } else if (ticketType === 'Paid' && (!ticketPrice || isNaN(ticketPrice) || Number(ticketPrice) <= 0)) {
+                    errorMsg = 'Please enter a valid ticket price for paid events.';
+                }
+                if (errorMsg) {
+                    const errorDiv = document.getElementById('form-error');
+                    errorDiv.textContent = errorMsg;
+                    errorDiv.style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('form-error').style.display = 'none';
+                }
+
                 const formData = new FormData();
-                formData.append('title', document.getElementById('event-name').value);
-                formData.append('description', document.getElementById('event-description').value);
-                formData.append('date', document.getElementById('event-start-datetime').value);
-                formData.append('enddate', document.getElementById('event-end-datetime').value);
+                formData.append('title', name);
+                formData.append('description', desc);
+                formData.append('date', start);
+                formData.append('enddate', end);
                 formData.append('registrationdeadline', document.getElementById('event-registration-deadline').value);
-                formData.append('image', document.getElementById('event-poster').files[0]);
-                formData.append('registrationurl', document.getElementById('event-registration-url').value);
+                formData.append('image', poster);
+                formData.append('registrationurl', regUrl);
                 formData.append('status', 'Upcoming !');
-                formData.append('branch', document.getElementById('event-branch').value);
-                formData.append('category', document.getElementById('event-category').value);
-                formData.append('type', document.getElementById('event-type').value);
+                formData.append('branch', branch);
+                formData.append('category', category);
+                formData.append('type', type);
                 formData.append('venue', document.getElementById('event-venue').value);
-                formData.append('tickettype', document.getElementById('event-ticket-type').value);
-                formData.append('ticketprice', document.getElementById('event-ticket-price').value);
+                formData.append('tickettype', ticketType);
+                formData.append('ticketprice', ticketPrice);
 
                 try {
                     const response = await fetch('http://localhost:3000/api/events', {
                         method: 'POST',
-                        body: formData
+                        body: formData,
+                        headers: {
+                            'x-admin-token': 'mysecrettoken123' // Add admin token for authentication
+                        }
                     });
 
                     if (response.ok) {
                         alert('Event created successfully!');
                         window.location.reload();
                     } else {
-                        alert('Failed to create event.');
+                        const errorText = await response.text();
+                        alert('Failed to create event. ' + errorText);
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    console.log(formData);
                     alert('Failed to create event.');
                 }
             });
+
+            // Logout logic
+            const logout = () => {
+                // Remove token from localStorage and clear cookie
+                localStorage.removeItem('token');
+                document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+                window.location.href = '/';
+            };
         </script>
+        <button type="button" onclick="logout()" class="logout-btn" title="Logout" aria-label="Logout">
+            <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Logout
+        </button>
     </div>
 
     <!-- Footer -->
@@ -190,7 +233,7 @@
         </div>
 
         <div class="copyright">
-            <p> &copy; 2021 MITS Event Manager. All Rights Reserved.</p>
+            <p> &copy; 2025 MITS Event Manager. All Rights Reserved.</p>
         </div>
 
 

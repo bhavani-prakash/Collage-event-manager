@@ -34,138 +34,162 @@
                 <option value="civil">Civil</option>
                 <option value="others">Others</option>
             </select>
+            <input type="text" id="search-input" placeholder="Search events..." style="margin-left:10px; padding:4px;">
+            <input type="date" id="date-filter" style="margin-left:10px; padding:4px;">
+            <button id="clear-filters" style="margin-left:10px; padding:4px;">Clear Filters</button>
 
             <script>
-                async function fetchAndRenderEvents(department = 'all') {
+                let allEvents = [];
+                let currentPage = 1;
+                const eventsPerPage = 6;
+
+                async function fetchAndRenderEvents(department = 'all', search = '', date = '', page = 1) {
                     const eventsContainer = document.getElementById('events-section');
                     eventsContainer.innerHTML = '';
-
-                    // Helper to map filter value to branch
-                    function getBranchFromFilter(value) {
-                        switch (value) {
-                            case 'cse': return 'CSE';
-                            case 'ece': return 'ECE';
-                            case 'ai': return 'AI';
-                            case 'ml': return 'ML';
-                            case 'cyber': return 'CYBER';
-                            case 'mech': return 'MECH';
-                            case 'civil': return 'CIVIL';
-                            case 'others': return 'Others';
-                            default: return null;
-                        }
+                    let url = 'http://localhost:3000/api/events';
+                    if (department && department !== 'all') {
+                        url += `?department=${department}`;
                     }
-
-                    // Fetch and filter JSON events
                     try {
-                        const jsonResponse = await fetch('static/JSON/events.json');
-                        const jsonEvents = await jsonResponse.json();
-                        let filteredJsonEvents = jsonEvents;
-                        if (department !== 'all') {
-                            const branch = getBranchFromFilter(department);
-                            filteredJsonEvents = jsonEvents.filter(event => (event.branch || '').toUpperCase() === branch);
-                        }
-                        filteredJsonEvents.forEach(event => {
-                            const now = new Date();
-                            const start = new Date(event.date);
-                            const end = new Date(event.enddate);
-
-                            let status = '';
-                            if (now < start) {
-                                status = 'Upcoming';
-                            } else if (now >= start && now <= end) {
-                                status = 'Ongoing';
-                            } else {
-                                status = 'Completed';
-                            }
-                            const eventCard = document.createElement('div');
-                            eventCard.classList.add('event-card');
-                            eventCard.innerHTML = `
-                                <img src="${event.image}" alt="${event.alt}" class="event-image">
-                                <div class="event-status">${status}</div>
-                                <div class="event-date">${event.date}</div>
-                                <h3 class="event-title">${event.title}</h3>
-                                <p class="event-description">${event.description}</p>
-                                <a href="${event.detailsLink}" target="_blank" class="view-details">View Details</a>
-                            `;
-                            eventsContainer.appendChild(eventCard);
-                        });
-                    } catch (error) {
-                        console.error('Error fetching events from JSON:', error);
-                    }
-
-                    // Fetch and filter DB events
-                    try {
-                        let url = 'http://localhost:3000/api/events';
-                        if (department && department !== 'all') {
-                            url += `?department=${department}`;
-                        }
                         const dbResponse = await fetch(url);
-                        const dbEvents = await dbResponse.json();
-
-                        dbEvents.forEach(event => {
-                            let regUrl = event.registrationurl;
-                            if (regUrl && !regUrl.startsWith('http://') && !regUrl.startsWith('https://')) {
-                                regUrl = 'https://' + regUrl;
-                            }
-                            const eventDate = new Date(event.date).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
+                        let dbEvents = await dbResponse.json();
+                        // Save all events for client-side filtering
+                        allEvents = dbEvents;
+                        // Search filter
+                        if (search) {
+                            dbEvents = dbEvents.filter(event =>
+                                event.title.toLowerCase().includes(search.toLowerCase()) ||
+                                event.description.toLowerCase().includes(search.toLowerCase())
+                            );
+                        }
+                        // Date filter
+                        if (date) {
+                            dbEvents = dbEvents.filter(event => {
+                                const eventDate = new Date(event.date).toISOString().split('T')[0];
+                                return eventDate === date;
                             });
-
-                            // Dynamic status calculation
-                            const now = new Date();
-                            const start = new Date(event.date);
-                            const end = new Date(event.enddate);
-
-                            let status = '';
-                            if (now < start) {
-                                status = 'Upcoming';
-                            } else if (now >= start && now <= end) {
-                                status = 'Ongoing';
-                            } else {
-                                status = 'Completed';
-                            }
-                            // Check registration deadline
-                            let isRegistrationClosed = false;
-                            if (event.registrationdeadline) {
-                                const deadline = new Date(event.registrationdeadline);
-                                const now = new Date();
-                                isRegistrationClosed = now > deadline;
-                            }
-
-                            const eventCard = document.createElement('div');
-                            eventCard.classList.add('event-card');
-                            eventCard.innerHTML = `
-                                <img src="${event.image}" alt="${event.title}" class="event-image">
-                                <div class="event-status">${status}</div>
-                                <div class="event-date">${eventDate}</div>
-                                <h3 class="event-title">${event.title}</h3>
-                                <p class="event-description">${event.description}</p>
-                                ${isRegistrationClosed
-                                    ? `<span class="view-details registrations-closed">Registrations Closed</span>`
-                                    : `<a href="${regUrl}" target="_blank" class="view-details">View Details</a>`
+                        }
+                        // Pagination
+                        const totalPages = Math.ceil(dbEvents.length / eventsPerPage);
+                        if (page > totalPages) page = 1;
+                        const startIdx = (page - 1) * eventsPerPage;
+                        const paginatedEvents = dbEvents.slice(startIdx, startIdx + eventsPerPage);
+                        if (!Array.isArray(paginatedEvents) || paginatedEvents.length === 0) {
+                            eventsContainer.innerHTML = '<p style="text-align:center;">No events found.</p>';
+                        } else {
+                            paginatedEvents.forEach(event => {
+                                let regUrl = event.registrationurl;
+                                if (regUrl && !regUrl.startsWith('http://') && !regUrl.startsWith('https://')) {
+                                    regUrl = 'https://' + regUrl;
                                 }
-                            `;
-                            eventsContainer.appendChild(eventCard);
-                            if (isRegistrationClosed) {
-                                const closedBtn = eventCard.querySelector('.registrations-closed');
-                                closedBtn.addEventListener('click', () => {
-                                    alert('Registrations are closed for this event.');
+                                const eventDate = new Date(event.date).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
                                 });
-                            }
-                        });
+                                const now = new Date();
+                                const start = new Date(event.date);
+                                const end = new Date(event.enddate);
+                                let status = '';
+                                if (now < start) {
+                                    status = 'Upcoming';
+                                } else if (now >= start && now <= end) {
+                                    status = 'Ongoing';
+                                } else {
+                                    status = 'Completed';
+                                }
+                                let isRegistrationClosed = false;
+                                if (event.registrationdeadline) {
+                                    const deadline = new Date(event.registrationdeadline);
+                                    isRegistrationClosed = now > deadline;
+                                }
+                                // Enhanced event card
+                                const eventCard = document.createElement('div');
+                                eventCard.classList.add('event-card', 'enhanced-card');
+                                eventCard.innerHTML = `
+                                    <div class="event-card-header">
+                                        <img src="${event.image}" alt="${event.title}" class="event-image">
+                                        <div class="event-status ${status.toLowerCase()}">${status}</div>
+                                    </div>
+                                    <div class="event-card-body">
+                                        <h3 class="event-title">${event.title}</h3>
+                                        <div class="event-meta">
+                                            <span class="event-date"><i class="fa fa-calendar"></i> ${eventDate}</span>
+                                            <span class="event-branch"><i class="fa fa-building"></i> ${event.branch}</span>
+                                            <span class="event-type"><i class="fa fa-tag"></i> ${event.type}</span>
+                                        </div>
+                                        <p class="event-description">${event.description}</p>
+                                    </div>
+                                    <div class="event-card-footer">
+                                        ${isRegistrationClosed
+                                            ? `<span class="view-details registrations-closed">Registrations Closed</span>`
+                                            : `<a href="${regUrl}" target="_blank" class="view-details">View Details</a>`
+                                        }
+                                    </div>
+                                `;
+                                eventsContainer.appendChild(eventCard);
+                                if (isRegistrationClosed) {
+                                    const closedBtn = eventCard.querySelector('.registrations-closed');
+                                    closedBtn.addEventListener('click', () => {
+                                        alert('Registrations are closed for this event.');
+                                    });
+                                }
+                            });
+                        }
+                        // Pagination controls
+                        renderPagination(totalPages, page);
                     } catch (err) {
                         console.error('Failed to fetch events from Database:', err);
+                        eventsContainer.innerHTML = '<p style="text-align:center; color:red;">Failed to load events.</p>';
+                    }
+                }
+
+                function renderPagination(totalPages, currentPage) {
+                    let paginationContainer = document.getElementById('pagination');
+                    if (!paginationContainer) {
+                        paginationContainer = document.createElement('div');
+                        paginationContainer.id = 'pagination';
+                        paginationContainer.style.textAlign = 'center';
+                        paginationContainer.style.margin = '20px 0';
+                        document.getElementById('events-section').after(paginationContainer);
+                    }
+                    paginationContainer.innerHTML = '';
+                    if (totalPages <= 1) return;
+                    for (let i = 1; i <= totalPages; i++) {
+                        const btn = document.createElement('button');
+                        btn.textContent = i;
+                        btn.className = 'pagination-btn' + (i === currentPage ? ' active' : '');
+                        btn.onclick = () => {
+                            fetchAndRenderEvents(
+                                document.getElementById('department-filter').value,
+                                document.getElementById('search-input').value,
+                                document.getElementById('date-filter').value,
+                                i
+                            );
+                        };
+                        paginationContainer.appendChild(btn);
                     }
                 }
 
                 document.addEventListener('DOMContentLoaded', () => {
                     const departmentFilter = document.getElementById('department-filter');
-                    fetchAndRenderEvents(departmentFilter.value);
-
+                    const searchInput = document.getElementById('search-input');
+                    const dateFilter = document.getElementById('date-filter');
+                    const clearBtn = document.getElementById('clear-filters');
+                    fetchAndRenderEvents(departmentFilter.value, '', '', 1);
                     departmentFilter.addEventListener('change', function () {
-                        fetchAndRenderEvents(this.value);
+                        fetchAndRenderEvents(this.value, searchInput.value, dateFilter.value, 1);
+                    });
+                    searchInput.addEventListener('input', function () {
+                        fetchAndRenderEvents(departmentFilter.value, this.value, dateFilter.value, 1);
+                    });
+                    dateFilter.addEventListener('change', function () {
+                        fetchAndRenderEvents(departmentFilter.value, searchInput.value, this.value, 1);
+                    });
+                    clearBtn.addEventListener('click', function () {
+                        searchInput.value = '';
+                        dateFilter.value = '';
+                        fetchAndRenderEvents(departmentFilter.value, '', '', 1);
                     });
                 });
             </script>
@@ -243,3 +267,94 @@
 </body>
 
 </html>
+
+<style>
+.event-card.enhanced-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    margin: 20px auto;
+    max-width: 400px;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s;
+}
+.event-card-header {
+    position: relative;
+}
+.event-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.event-status {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #1976d2;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.event-status.ongoing { background: #43a047; }
+.event-status.completed { background: #bdbdbd; }
+.event-status.upcoming { background: #1976d2; }
+.event-card-body {
+    padding: 16px;
+}
+.event-title {
+    margin: 0 0 8px 0;
+    font-size: 1.3em;
+    color: #222;
+}
+.event-meta {
+    font-size: 0.95em;
+    color: #666;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.event-description {
+    color: #444;
+    margin-bottom: 10px;
+}
+.event-card-footer {
+    padding: 12px 16px;
+    background: #f9f9f9;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+.view-details {
+    background: #1976d2;
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.view-details:hover {
+    background: #125ea2;
+}
+.pagination-btn {
+    margin: 0 3px;
+    padding: 6px 12px;
+    border: none;
+    background: #eee;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.pagination-btn.active {
+    background: #1976d2;
+    color: #fff;
+}
+</style>
