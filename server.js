@@ -46,6 +46,11 @@ app.get('/admin/create', isAdmin, (req, res) => {
     });
 });
 
+// Serve admin event management page (list, edit, delete)
+app.get('/admin/events', isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'Frontend', 'manage.html'));
+});
+
 // Serve user login page
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'Frontend', 'login.html'));

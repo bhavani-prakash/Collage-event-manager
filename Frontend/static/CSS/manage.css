@@ -1,0 +1,130 @@
+body {
+    background: linear-gradient(120deg, #4e54c8 0%, #8f94fb 100%);
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+.form-container {
+    background: #fff;
+    max-width: 900px;
+    margin: 3rem auto 2rem auto;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px 0 rgba(76, 90, 255, 0.15);
+    padding: 2.5rem 2.5rem 2rem 2.5rem;
+    position: relative;
+}
+.heading h2 {
+    color: #4e54c8;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: 1px;
+    text-align: center;
+}
+#admin-events-list {
+    margin-top: 1.5rem;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #f9f9ff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+th, td {
+    padding: 1rem 0.7rem;
+    text-align: left;
+}
+th {
+    background: #e6e8fa;
+    color: #4e54c8;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+tr {
+    transition: background 0.2s;
+}
+tr:hover {
+    background: #f0f4ff;
+}
+td {
+    font-size: 1rem;
+    color: #222;
+}
+.logout-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.3rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px 0 rgba(231, 76, 60, 0.08);
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.logout-btn:hover {
+    background: #c0392b;
+}
+.fa-sign-out-alt {
+    margin-right: 7px;
+}
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.98rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+}
+.action-btn.create {
+    background: #27ae60;
+    color: #fff;
+}
+.action-btn.create:hover {
+    background: #219150;
+}
+.action-btn.edit {
+    background: #4e54c8;
+    color: #fff;
+}
+.action-btn.edit:hover {
+    background: #23286b;
+}
+.action-btn.delete {
+    background: #e74c3c;
+    color: #fff;
+}
+.action-btn.delete:hover {
+    background: #c0392b;
+}
+.manage-actions, .create-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.2rem;
+    gap: 1rem;
+    text-decoration: none;
+}
+@media (max-width: 700px) {
+    .form-container {
+        padding: 1rem 0.5rem;
+    }
+    th, td {
+        padding: 0.7rem 0.3rem;
+        font-size: 0.95rem;
+    }
+    .logout-btn {
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.95rem;
+    }
+}

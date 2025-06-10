@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Event Management</title>
+    <link rel="stylesheet" href="/static/CSS/styles.css">
+    <link rel="stylesheet" href="/static/CSS/create-event.css">
+    <link rel="stylesheet" href="/static/CSS/manage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="form-container">
+        <div class="heading">
+            <h2>Manage Events</h2>
+        </div>
+        <div class="manage-actions">
+            <a href="/create-event.html" class="action-btn create">
+                <i class="fa fa-plus-circle"></i> Create Event
+            </a>
+        </div>
+        <div id="admin-events-list">
+            <p>Loading events...</p>
+        </div>
+        <button type="button" onclick="logout()" class="logout-btn" title="Logout" aria-label="Logout">
+            <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Logout
+        </button>
+    </div>
+    <script>
+        // Logout logic
+        function logout() {
+            localStorage.removeItem('token');
+            document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+            window.location.href = '/admin';
+        }
+
+        // Fetch and render events for admin
+        async function fetchEvents() {
+            const container = document.getElementById('admin-events-list');
+            container.innerHTML = '<p>Loading events...</p>';
+            try {
+                const res = await fetch('/api/events');
+                const events = await res.json();
+                if (!Array.isArray(events) || events.length === 0) {
+                    container.innerHTML = '<p>No events found.</p>';
+                    return;
+                }
+                let html = '<table>';
+                html += '<tr><th>Title</th><th>Date & Time</th><th>Branch</th><th>Actions</th></tr>';
+                events.forEach(event => {
+                    html += `<tr>
+                        <td>${event.title}</td>
+                        <td>${new Date(event.date).toLocaleString()}</td>
+                        <td>${event.branch}</td>
+                        <td>
+                            <button class="action-btn edit" onclick="editEvent('${event._id}')"><i class="fa fa-edit"></i> Edit</button>
+                            <button class="action-btn delete" onclick="deleteEvent('${event._id}')"><i class="fa fa-trash"></i> Delete</button>
+                        </td>
+                    </tr>`;
+                });
+                html += '</table>';
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = '<p style="color:red;">Failed to load events.</p>';
+            }
+        }
+
+        // Delete event
+        async function deleteEvent(id) {
+            if (!confirm('Are you sure you want to delete this event?')) return;
+            try {
+                const res = await fetch(`/api/events/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (res.ok) {
+                    alert('Event deleted.');
+                    fetchEvents();
+                } else {
+                    alert('Failed to delete event.');
+                }
+            } catch (err) {
+                alert('Server error.');
+            }
+        }
+
+        // Edit event (redirect to create-event.html with event id as query param)
+        function editEvent(id) {
+            window.location.href = `/admin/create?edit=${id}`;
+        }
+
+        // On page load
+        fetchEvents();
+    </script>
+</body>
+</html>

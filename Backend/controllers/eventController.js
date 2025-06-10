@@ -1,6 +1,7 @@
 const Event = require('../models/event');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -93,13 +94,47 @@ const createEvent = async (req, res) => {
 
 // Update an event
 const updateEvent = async (req, res) => {
-    try {
-        const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!event) return res.status(404).json({ message: 'Event not found' });
-        res.json(event);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
+    upload(req, res, async (err) => {
+        if (err) {
+            console.error('Multer error:', err);
+            return res.status(400).json({ message: err.message });
+        }
+        try {
+            const event = await Event.findById(req.params.id);
+            if (!event) return res.status(404).json({ message: 'Event not found' });
+
+            // If a new poster is uploaded, delete the old one
+            if (req.file) {
+                if (event.image && event.image.startsWith('/uploads/')) {
+                    const oldPath = path.join(__dirname, '..', event.image);
+                    fs.unlink(oldPath, (err) => {
+                        if (err) console.warn('Failed to delete old poster:', err.message);
+                    });
+                }
+                event.image = `/uploads/${req.file.filename}`;
+            }
+
+            // Update other fields
+            event.title = req.body.title;
+            event.description = req.body.description;
+            event.date = req.body.date;
+            event.enddate = req.body.enddate;
+            event.registrationdeadline = req.body.registrationdeadline;
+            event.registrationurl = req.body.registrationurl;
+            event.status = req.body.status;
+            event.branch = req.body.branch;
+            event.category = req.body.category;
+            event.type = req.body.type;
+            event.venue = req.body.venue;
+            event.tickettype = req.body.tickettype;
+            event.ticketprice = req.body.ticketprice ? Number(req.body.ticketprice) : undefined;
+
+            await event.save();
+            res.json(event);
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
+    });
 };
 
 // Delete an event

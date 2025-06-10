@@ -14,6 +14,9 @@
         <div class="heading">
             <h2> ADD EVENT </h2>
         </div>
+        <div class="create-actions">
+            <a href="/manage.html" class="action-btn create"><i class="fa fa-tasks"></i> Manage Events</a>
+        </div>
         <form class="create-event-form" id="create-event-form">
             <div id="form-error" style="color: red; display: none; margin-bottom: 10px;"></div>
             <div class="input-form">
@@ -116,7 +119,64 @@
             </div>
         </form>
         <script>
-            document.getElementById('create-event-form').addEventListener('submit', async function (e) {
+            // Helper to get query params
+            function getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+
+            const editEventId = getQueryParam('edit');
+            const form = document.getElementById('create-event-form');
+            const submitButton = document.querySelector('.event-submit-but');
+            const heading = document.querySelector('.heading h2');
+
+            // If editing, fetch event data and pre-fill form
+            if (editEventId) {
+                heading.textContent = 'EDIT EVENT';
+                submitButton.textContent = 'Update event';
+                fetch(`http://localhost:3000/api/events/${editEventId}`, {
+                    credentials: 'include',
+                    headers: {
+                        'x-admin-token': 'mysecrettoken123'
+                    }
+                })
+                .then(res => res.json())
+                .then(event => {
+                    document.getElementById('event-name').value = event.title || '';
+                    document.getElementById('event-description').value = event.description || '';
+                    document.getElementById('event-registration-url').value = event.registrationurl || '';
+                    document.getElementById('event-category').value = event.category || 'Academic';
+                    document.getElementById('event-start-datetime').value = event.date ? event.date.slice(0,16) : '';
+                    document.getElementById('event-end-datetime').value = event.enddate ? event.enddate.slice(0,16) : '';
+                    document.getElementById('event-registration-deadline').value = event.registrationdeadline ? event.registrationdeadline.slice(0,16) : '';
+                    document.getElementById('event-type').value = event.type || 'technical';
+                    document.getElementById('event-branch').value = event.branch || 'CSE';
+                    document.getElementById('event-venue').value = event.venue || '';
+                    document.getElementById('event-ticket-type').value = event.tickettype || 'Free';
+                    document.getElementById('event-ticket-price').value = event.ticketprice || '';
+                    // Show current poster if available
+                                        if (event.image) {
+                        let posterPreview = document.getElementById('poster-preview');
+                        if (!posterPreview) {
+                            posterPreview = document.createElement('div');
+                            posterPreview.id = 'poster-preview';
+                            posterPreview.style.margin = '10px 0';
+                            document.getElementById('event-poster').parentNode.appendChild(posterPreview);
+                        }
+                        // Robust path handling: supports http, /uploads/, or just filename
+                        let imgSrc = event.image;
+                        if (!imgSrc.startsWith('http') && !imgSrc.startsWith('/uploads/')) {
+                            imgSrc = '/uploads/' + imgSrc;
+                        }
+                        posterPreview.innerHTML = `<img src="${imgSrc}" alt="Current Poster" style="max-width:180px;max-height:120px;border-radius:8px;border:1px solid #eee;box-shadow:0 2px 8px #0001;"> <span style='font-size:0.95em;color:#555;'>(Current Poster)</span>`;
+                    }
+                })
+                .catch(() => {
+                    alert('Failed to load event data for editing.');
+                });
+            }
+
+            form.addEventListener('submit', async function (e) {
                 e.preventDefault();
 
                 // Client-side validation
@@ -164,24 +224,51 @@
                 formData.append('ticketprice', ticketPrice);
 
                 try {
-                    const response = await fetch('http://localhost:3000/api/events', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'x-admin-token': 'mysecrettoken123' // Add admin token for authentication
-                        }
-                    });
+                    let response;
+                    if (editEventId) {
+                        // If editing, send PUT request
+                        const putData = new FormData();
+                        putData.append('title', name);
+                        putData.append('description', desc);
+                        putData.append('date', start);
+                        putData.append('enddate', end);
+                        putData.append('registrationdeadline', document.getElementById('event-registration-deadline').value);
+                        if (poster) putData.append('image', poster); // Only send if changed
+                        putData.append('registrationurl', regUrl);
+                        putData.append('status', 'Upcoming !');
+                        putData.append('branch', branch);
+                        putData.append('category', category);
+                        putData.append('type', type);
+                        putData.append('venue', document.getElementById('event-venue').value);
+                        putData.append('tickettype', ticketType);
+                        putData.append('ticketprice', ticketPrice);
+                        response = await fetch(`http://localhost:3000/api/events/${editEventId}`, {
+                            method: 'PUT',
+                            body: putData,
+                            headers: {
+                                'x-admin-token': 'mysecrettoken123'
+                            }
+                        });
+                    } else {
+                        response = await fetch('http://localhost:3000/api/events', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'x-admin-token': 'mysecrettoken123'
+                            }
+                        });
+                    }
 
                     if (response.ok) {
-                        alert('Event created successfully!');
-                        window.location.reload();
+                        alert(editEventId ? 'Event updated successfully!' : 'Event created successfully!');
+                        window.location.href = editEventId ? '/' : '/admin/events'; // Redirect to home after update, admin/events after create
                     } else {
                         const errorText = await response.text();
-                        alert('Failed to create event. ' + errorText);
+                        alert('Failed to ' + (editEventId ? 'update' : 'create') + ' event. ' + errorText);
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Failed to create event.');
+                    alert('Failed to ' + (editEventId ? 'update' : 'create') + ' event.');
                 }
             });
 
