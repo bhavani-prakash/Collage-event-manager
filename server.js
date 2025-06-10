@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 
 // Serve /admin login/register page (use only /admin for admin-login.html)
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Frontend', 'admin-login.html'));
+    res.sendFile(path.join(__dirname, 'Frontend', 'login.html'));
 });
 
 // Serve create-event.html only for admins (protected)
@@ -49,16 +49,6 @@ app.get('/admin/create', isAdmin, (req, res) => {
 // Serve admin event management page (list, edit, delete)
 app.get('/admin/events', isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'Frontend', 'manage.html'));
-});
-
-// Serve user login page
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Frontend', 'login.html'));
-});
-
-// Serve user registration page
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Frontend', 'register.html'));
 });
 
 app.listen(port, () => {
