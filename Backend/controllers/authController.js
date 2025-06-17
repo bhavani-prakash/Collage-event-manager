@@ -73,3 +73,26 @@ exports.adminOnly = (req, res, next) => {
         res.status(403).json({ message: 'Admins only.' });
     }
 };
+
+// Reset (Forget) Password
+exports.forgetPassword = async (req, res) => {
+    try {
+        const { username, newPassword } = req.body;
+        if (!username || !newPassword) {
+            return res.status(400).json({ message: 'Username and new password are required.' });
+        }
+        if (!hasSpecialChar(newPassword)) {
+            return res.status(400).json({ message: 'Password must contain at least one special character.' });
+        }
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+        res.json({ message: 'Password reset successful.' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error.' });
+    }
+};

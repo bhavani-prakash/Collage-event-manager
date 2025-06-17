@@ -21,6 +21,8 @@
                 </div>
                 <div id="login-error" style="color:red; display:none;"></div>
                 <button type="submit">Login</button>
+                <br>
+                <a href="#" id="forget-password-btn" class="register-btn">Forgot Password?</a>
             </form>
             <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
         </div>
@@ -39,6 +41,25 @@
                 <button type="submit">Register</button>
             </form>
             <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+        </div>
+    </div>
+    <!-- Forget Password Modal -->
+    <div id="forget-password-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:30px; border-radius:8px; max-width:350px; margin:auto; position:relative;">
+            <span id="close-forget-modal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px;">&times;</span>
+            <h3>Reset Password</h3>
+            <form id="forget-password-form">
+                <div class="form-group">
+                    <label for="fp-username">Username:</label>
+                    <input type="text" id="fp-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="fp-new-password">New Password:</label>
+                    <input type="password" id="fp-new-password" required>
+                </div>
+                <div id="fp-error" style="color:red; display:none;"></div>
+                <button type="submit">Reset Password</button>
+            </form>
         </div>
     </div>
     <script>
@@ -113,6 +134,42 @@
             } catch (err) {
                 document.getElementById('register-error').textContent = 'Server error.';
                 document.getElementById('register-error').style.display = 'block';
+            }
+        });
+        // Forget Password Modal logic
+        document.getElementById('forget-password-btn').onclick = function() {
+            document.getElementById('forget-password-modal').style.display = 'flex';
+        };
+        document.getElementById('close-forget-modal').onclick = function() {
+            document.getElementById('forget-password-modal').style.display = 'none';
+            document.getElementById('fp-error').style.display = 'none';
+        };
+        document.getElementById('forget-password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('fp-username').value;
+            const newPassword = document.getElementById('fp-new-password').value;
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
+                document.getElementById('fp-error').textContent = 'Password must contain at least one special character.';
+                document.getElementById('fp-error').style.display = 'block';
+                return;
+            }
+            try {
+                const res = await fetch('/api/auth/forget-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, newPassword })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Password reset successful! Please login.');
+                    document.getElementById('forget-password-modal').style.display = 'none';
+                } else {
+                    document.getElementById('fp-error').textContent = data.message || 'Reset failed.';
+                    document.getElementById('fp-error').style.display = 'block';
+                }
+            } catch (err) {
+                document.getElementById('fp-error').textContent = 'Server error.';
+                document.getElementById('fp-error').style.display = 'block';
             }
         });
     </script>
