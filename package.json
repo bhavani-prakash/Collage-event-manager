@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "network-url": "node -e \"const ip = require('ip'); console.log('Network URL: http://' + ip.address() + ':3000');\""
   }
 }
