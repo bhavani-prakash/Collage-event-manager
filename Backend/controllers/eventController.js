@@ -94,16 +94,17 @@ const createEvent = async (req, res) => {
 
 // Update an event
 const updateEvent = async (req, res) => {
-    upload(req, res, async (err) => {
-        if (err) {
-            console.error('Multer error:', err);
-            return res.status(400).json({ message: err.message });
-        }
+    // Allow updates from either multipart/form-data (with possible file)
+    // or from a regular request (no file). Only change fields that are provided
+    // in the request so required fields are not accidentally cleared.
+    const isMultipart = req.headers['content-type'] && req.headers['content-type'].includes('multipart/form-data');
+
+    const processUpdate = async () => {
         try {
             const event = await Event.findById(req.params.id);
             if (!event) return res.status(404).json({ message: 'Event not found' });
 
-            // If a new poster is uploaded, delete the old one
+            // If a new poster is uploaded, delete the old one and set the new path
             if (req.file) {
                 if (event.image && event.image.startsWith('/uploads/')) {
                     const oldPath = path.join(__dirname, '..', event.image);
@@ -114,27 +115,47 @@ const updateEvent = async (req, res) => {
                 event.image = `/uploads/${req.file.filename}`;
             }
 
-            // Update other fields
-            event.title = req.body.title;
-            event.description = req.body.description;
-            event.date = req.body.date;
-            event.enddate = req.body.enddate;
-            event.registrationdeadline = req.body.registrationdeadline;
-            event.registrationurl = req.body.registrationurl;
-            event.status = req.body.status;
-            event.branch = req.body.branch;
-            event.category = req.body.category;
-            event.type = req.body.type;
-            event.venue = req.body.venue;
-            event.tickettype = req.body.tickettype;
-            event.ticketprice = req.body.ticketprice ? Number(req.body.ticketprice) : undefined;
+            // Helper: set field only when present in request body
+            const setIfPresent = (field, transform) => {
+                if (typeof req.body[field] !== 'undefined' && req.body[field] !== '') {
+                    event[field] = transform ? transform(req.body[field]) : req.body[field];
+                }
+            };
+
+            setIfPresent('title');
+            setIfPresent('description');
+            setIfPresent('date', v => v);
+            setIfPresent('enddate', v => v);
+            setIfPresent('registrationdeadline', v => v);
+            setIfPresent('registrationurl');
+            setIfPresent('status');
+            setIfPresent('branch');
+            setIfPresent('category');
+            setIfPresent('type');
+            setIfPresent('venue');
+            setIfPresent('tickettype');
+            if (typeof req.body.ticketprice !== 'undefined' && req.body.ticketprice !== '') {
+                event.ticketprice = Number(req.body.ticketprice);
+            }
 
             await event.save();
             res.json(event);
         } catch (err) {
             res.status(400).json({ message: err.message });
         }
-    });
+    };
+
+    if (isMultipart) {
+        upload(req, res, async (err) => {
+            if (err) {
+                console.error('Multer error:', err);
+                return res.status(400).json({ message: err.message });
+            }
+            await processUpdate();
+        });
+    } else {
+        await processUpdate();
+    }
 };
 
 // Delete an event

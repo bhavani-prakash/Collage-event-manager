@@ -47,6 +47,7 @@ nav {
     display: flex;
     gap: 2.5rem;
     align-items: center;
+    margin-right: 20px;
 }
 
 .nav-items a {
@@ -90,7 +91,7 @@ nav {
 /* Hero Section */
 .hero {
     color: #22223b;
-    padding: 60px 20px 40px 20px;
+    padding: 10px 20px 20px 20px;
     text-align: center;
     background: rgba(255, 255, 255, 0.75);
     border-radius: 0 0 32px 32px;
@@ -456,7 +457,6 @@ footer {
     background: #fff;
     border-radius: 50%;
     padding: 0.3rem;
-    box-shadow: 2px 0px 5px #8f94fb;
     transition: color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 .fab:hover {
